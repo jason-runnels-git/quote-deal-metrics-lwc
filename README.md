@@ -14,11 +14,11 @@ Revenue Cloud is where true deal economics are computed. This LWC makes those de
 
 ## Why the Quote, Not the Opportunity
 
-Opportunity Amount is a wide lens. It works for simple, single-period deals at list price. For anything more complex, it breaks down fast.
+Opportunity Amount is a single-period, list price forecasting lens. It works for simple, one-time deals. Once a Product Selling Model (PSM) with a pricing term is needed, standard Opportunity Products skew reality.
 
 ### The $180K Problem
 
-Take a product with a Monthly ProductSellingModel at $1,500/unit. A rep adds 10 units to an Opportunity as a standard Product - Opportunity Amount shows **$15,000**. That looks reasonable until you account for the contract term.
+Consider a product with a Monthly Product Selling Model priced at $1,500/unit. A rep adds 10 units to an Opportunity as a standard Product - Opportunity Amount shows **$15,000**. That looks reasonable until you account for the contract term.
 
 At 10 units × $1,500/month × 12 months, the true TCV is **$180,000** - 12× what appears in the pipeline report.
 
