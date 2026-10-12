@@ -1,6 +1,8 @@
 # Revenue Cloud Quote Deal Metrics LWC
 
-A Salesforce Lightning Web Component that surfaces real deal economics - TCV, ACV, MRR, Customer Lifecycle Type, and per-period forecasts - directly on the Quote record. Best practice is for Revenue Cloud to be the authoritative source of deal data for sellers, deal desk, and sales leadership during the quoting process. Opportunities alone are not sufficient. Furthermore, while Revenue Management Intelligence (RMI) dashboards surface real subscription KPIs too, they are rearward facing and not for sales. RMI answers "how are we doing?" from post-activation data - ARR trends, renewal rates, churn patterns - the right tool for finance and RevOps once deals are booked. This component addresses a significant gap in RMI - live, open deal insights for Sales. It answers, "if we say yes to this deal, what's the impact to our numbers?"
+A Salesforce Lightning Web Component that surfaces real deal economics - TCV, ACV, MRR, Customer Lifecycle Type, and per-period forecasts - directly on the Quote record.
+
+Best practice is for Revenue Cloud to be the authoritative source of deal data for sellers, deal desk, and sales leadership during the quoting process. Opportunities alone are not sufficient. Furthermore, while Revenue Management Intelligence (RMI) dashboards surface real subscription KPIs too, they are rearward facing and not for sales. RMI answers "how are we doing?" from post-activation data - ARR trends, renewal rates, churn patterns - the right tool for finance and RevOps once deals are booked. This component addresses a significant gap in RMI - live, open deal insights for Sales. It answers, "if we say yes to this deal, what's the impact to our numbers?"
 
 ![Deal Metrics component showing TCV, Blended ACV, Year 1 MRR, and per-period ramp forecast](screenshots/6_RampQuote_w_OneTime_Metrics.jpg)
 
