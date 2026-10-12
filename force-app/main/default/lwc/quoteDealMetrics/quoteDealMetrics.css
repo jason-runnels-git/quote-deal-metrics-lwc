@@ -1,0 +1,29 @@
+.section-heading {
+    border-bottom: 1px solid #9ba3af;
+    padding-bottom: 0.25rem;
+    color: #3e3e3c;
+    font-weight: 700;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    color: #706e6b;
+    margin-bottom: 0.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #181818;
+}
+
+.metric-currency {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #032d60;
+}
+
+.term-mismatch {
+    color: #e65c00;
+}

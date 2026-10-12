@@ -1,0 +1,287 @@
+<template>
+    <lightning-card title="Deal Metrics" icon-name="standard:contract_line_item">
+        <div slot="actions">
+            <lightning-button-icon
+                icon-name="utility:expand"
+                alternative-text="Expand to full screen"
+                title="Expand to full screen"
+                onclick={handleExpand}>
+            </lightning-button-icon>
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                alternative-text="Recalculate Deal Metrics"
+                title="Recalculate Deal Metrics"
+                disabled={isRecalculating}
+                onclick={handleRecalculate}>
+            </lightning-button-icon>
+        </div>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <template lwc:if={isLoading}>
+                <div class="slds-align_absolute-center slds-p-vertical_large">
+                    <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:elseif={hasError}>
+                <p class="slds-text-color_error slds-p-vertical_small">{errorMessage}</p>
+            </template>
+
+            <template lwc:else>
+
+                <!-- ── Deal Summary ─────────────────────────────────── -->
+                <div class="slds-m-bottom_medium">
+                    <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Deal Summary</h2>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Deal Type</p>
+                            <p class="field-value">{dealTypeDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Customer Lifecycle Type</p>
+                            <p class="field-value">{lifecycleTypeDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Deal Start Date</p>
+                            <p class="field-value">{dealStartDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Deal End Date</p>
+                            <p class="field-value">{dealEndDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Effective Deal Term</p>
+                            <p class="field-value">{termMonthsDisplay}</p>
+                        </div>
+                        <template lwc:if={showContractTerm}>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                <p class={contractTermLabelClass}>Term of Related Contract</p>
+                                <p class={contractTermValueClass}>{contractTermDisplay}</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- ── Deal Financials ──────────────────────────────── -->
+                <div class="slds-m-bottom_medium">
+                    <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Deal Financials</h2>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">TCV<br/>(This Deal)</p>
+                            <p class="field-value metric-currency">{tcvDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Blended ACV<br/>(TCV / Annualized Term)</p>
+                            <p class="field-value metric-currency">{blendedAcvDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Projected Year 1 MRR</p>
+                            <p class="field-value metric-currency">{year1MrrDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">Net New MRR</p>
+                            <p class="field-value metric-currency">{netNewMrrDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label">One-Time /<br/>Non-Recurring Fees</p>
+                            <p class="field-value metric-currency">{oneTimeFeesDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label slds-text-color_weak">Account Booked TCV<br/>(For Reference)</p>
+                            <p class="field-value metric-currency slds-text-color_weak">{accountBookedTcvDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                            <p class="field-label slds-text-color_weak">Account Current MRR<br/>(For Reference)</p>
+                            <p class="field-value metric-currency slds-text-color_weak">{accountCurrentMrrDisplay}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                    </div>
+                </div>
+
+                <!-- ── Per Year Forecast (ramp deals) ──────────────── -->
+                <template lwc:if={hasRampPeriods}>
+                    <div class="slds-m-bottom_medium">
+                        <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Per Year Forecast</h2>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" class="slds-text-align_center"><div class="slds-truncate">Period</div></th>
+                                    <th scope="col" class="slds-text-align_center"><div class="slds-truncate">Start</div></th>
+                                    <th scope="col" class="slds-text-align_center"><div class="slds-truncate">End</div></th>
+                                    <th scope="col" class="slds-text-align_center"><div class="slds-truncate">ACV</div></th>
+                                    <th scope="col" class="slds-text-align_center"><div class="slds-truncate">MRR</div></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={periodsFormatted} for:item="row">
+                                    <tr key={row.name}>
+                                        <td>{row.name}</td>
+                                        <td>{row.startDate}</td>
+                                        <td>{row.endDate}</td>
+                                        <td class="slds-text-align_right">{row.acv}</td>
+                                        <td class="slds-text-align_right">{row.mrr}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+
+
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- ── Full-screen expand modal ───────────────────────────────────── -->
+    <template lwc:if={isExpanded}>
+        <div class="slds-backdrop slds-backdrop_open" onclick={handleCollapse}></div>
+        <section role="dialog" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            onclick={handleCollapse} title="Close">
+                        <lightning-icon icon-name="utility:close" size="small" alternative-text="Close"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title">Deal Metrics</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <template lwc:if={isLoading}>
+                        <div class="slds-align_absolute-center slds-p-vertical_large">
+                            <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+                        </div>
+                    </template>
+
+                    <template lwc:elseif={hasError}>
+                        <p class="slds-text-color_error slds-p-vertical_small">{errorMessage}</p>
+                    </template>
+
+                    <template lwc:else>
+
+                        <!-- Deal Summary -->
+                        <div class="slds-m-bottom_medium">
+                            <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Deal Summary</h2>
+                            <div class="slds-grid slds-gutters slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Deal Type</p>
+                                    <p class="field-value">{dealTypeDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Customer Lifecycle Type</p>
+                                    <p class="field-value">{lifecycleTypeDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Deal Start Date</p>
+                                    <p class="field-value">{dealStartDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Deal End Date</p>
+                                    <p class="field-value">{dealEndDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Effective Deal Term</p>
+                                    <p class="field-value">{termMonthsDisplay}</p>
+                                </div>
+                                <template lwc:if={showContractTerm}>
+                                    <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                        <p class={contractTermLabelClass}>Term of Related Contract</p>
+                                        <p class={contractTermValueClass}>{contractTermDisplay}</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Deal Financials -->
+                        <div class="slds-m-bottom_medium">
+                            <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Deal Financials</h2>
+                            <div class="slds-grid slds-gutters slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">TCV<br/>(This Deal)</p>
+                                    <p class="field-value metric-currency">{tcvDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Blended ACV<br/>(TCV / Annualized Term)</p>
+                                    <p class="field-value metric-currency">{blendedAcvDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Projected Year 1 MRR</p>
+                                    <p class="field-value metric-currency">{year1MrrDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">Net New MRR</p>
+                                    <p class="field-value metric-currency">{netNewMrrDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label">One-Time /<br/>Non-Recurring Fees</p>
+                                    <p class="field-value metric-currency">{oneTimeFeesDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label slds-text-color_weak">Account Booked TCV<br/>(For Reference)</p>
+                                    <p class="field-value metric-currency slds-text-color_weak">{accountBookedTcvDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small">
+                                    <p class="field-label slds-text-color_weak">Account Current MRR<br/>(For Reference)</p>
+                                    <p class="field-value metric-currency slds-text-color_weak">{accountCurrentMrrDisplay}</p>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-5 slds-m-bottom_small"></div>
+                            </div>
+                        </div>
+
+                        <!-- Per Year Forecast -->
+                        <template lwc:if={hasRampPeriods}>
+                            <div class="slds-m-bottom_medium">
+                                <h2 class="section-heading slds-text-title_caps slds-m-bottom_small">Per Year Forecast</h2>
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Period</div></th>
+                                            <th scope="col"><div class="slds-truncate">Start</div></th>
+                                            <th scope="col"><div class="slds-truncate">End</div></th>
+                                            <th scope="col" class="slds-text-align_center"><div class="slds-truncate">ACV</div></th>
+                                            <th scope="col" class="slds-text-align_center"><div class="slds-truncate">MRR</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={periodsFormatted} for:item="row">
+                                            <tr key={row.name}>
+                                                <td>{row.name}</td>
+                                                <td>{row.startDate}</td>
+                                                <td>{row.endDate}</td>
+                                                <td class="slds-text-align_right">{row.acv}</td>
+                                                <td class="slds-text-align_right">{row.mrr}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+
+                    </template>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Recalculate"
+                        icon-name="utility:refresh"
+                        disabled={isRecalculating}
+                        onclick={handleRecalculate}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Close"
+                        variant="brand"
+                        onclick={handleCollapse}>
+                    </lightning-button>
+                </footer>
+
+            </div>
+        </section>
+    </template>
+
+</template>
