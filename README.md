@@ -205,6 +205,7 @@ The gap RMI doesn't fill is the **in-deal conversation** - when a seller is on a
 | `QuoteDealMetricsController` | Apex Class | Reads live account-level data: Current MRR, Booked TCV, contract term, per-period table |
 | `quoteDealMetrics` | Lightning Web Component | Renders the Deal Metrics tab on the Quote record page |
 | Custom fields on `Quote` | Metadata | Stores calculated metrics; see field list below |
+| `Quote_Deal_Metrics` | Permission Set | Grants Read and Edit FLS on all 10 custom Quote fields |
 
 ### Custom Quote Fields
 
@@ -221,22 +222,19 @@ The gap RMI doesn't fill is the **in-deal conversation** - when a seller is on a
 | `Deal_End_Date__c` | Date | Last period end date |
 | `Effective_Deal_Term_Months__c` | Number | Calendar months from Deal Start to Deal End |
 
-### Deploy
+### Clone and Deploy
 
 ```bash
-sf project deploy start \
-  --source-dir force-app/main/default/flows/RLM_Quote_Deal_Metrics.flow-meta.xml \
-  --source-dir force-app/main/default/classes/QuoteDealMetricsController.cls \
-  --source-dir force-app/main/default/classes/QuoteDealMetricsController.cls-meta.xml \
-  --source-dir force-app/main/default/lwc/quoteDealMetrics \
-  --target-org <your-org-alias>
+git clone https://github.com/jason-runnels-git/quote-deal-metrics-lwc.git
+cd quote-deal-metrics-lwc
+sf project deploy start --target-org <your-org-alias>
 ```
 
 ### Post-Deploy Steps
 
 1. **Activate the flow.** Go to Setup → Flows → `RLM_Quote_Deal_Metrics` and set it to Active.
 2. **Add fields to the Quote page layout.** All `*__c` fields need to be on the layout for users to see stored values.
-3. **Grant FLS.** Grant Read and Edit visibility on all custom Quote fields to relevant profiles. The flow and Apex run `without sharing`, but FLS still applies to the LWC wire calls.
+3. **Assign the permission set.** Assign `Quote_Deal_Metrics` to any user who needs to see or recalculate Deal Metrics. This grants Read and Edit FLS on all 10 custom Quote fields. The flow and Apex run `without sharing`, but FLS still applies to the LWC wire calls.
 4. **Add the LWC to the Quote record page.** In Lightning App Builder, add `quoteDealMetrics` as a new tab on the Quote record page and label it **Deal Metrics**.
 
 ---
