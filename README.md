@@ -35,7 +35,7 @@ Native Opportunity Products have no concept of term length. The same problem com
 
 ---
 
-## What the Component Surfaces
+## What this LWC Surfaces
 
 The **Deal Metrics** tab on a Quote record shows three sections.
 
