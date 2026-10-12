@@ -2,6 +2,8 @@
 
 A Salesforce Lightning Web Component that surfaces real deal economics - TCV, ACV, MRR, Customer Lifecycle Type, and per-period forecasts - directly on the Revenue Cloud Quote record. Designed to make the Quote the authoritative source of deal data for sellers, deal desk, and sales leadership during the quoting process.
 
+![Deal Metrics component showing TCV, Blended ACV, Year 1 MRR, and per-period ramp forecast](screenshots/6_RampQuote_w_OneTime_Metrics.jpg)
+
 **Why this matters for subscription businesses:** Subscription deals don't behave like one-time transactions. They renew, they ramp, they amend mid-term, they bundle recurring and one-time products, and they carry pricing logic - term length, attribute-based rules, volume tiers, discount structures - that native Opportunity Products simply cannot represent. A business running on native Opportunities without a CPQ or Quote engine is flying blind on its own pipeline. The Revenue Cloud Quote is where actual deal economics are computed. This component makes those economics visible.
 
 ---
