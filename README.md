@@ -1,8 +1,8 @@
 # Revenue Cloud Quote Deal Metrics LWC
 
-A Salesforce Lightning Web Component that surfaces real deal economics — TCV, ACV, MRR, Customer Lifecycle Type, and per-period forecasts — directly on the Revenue Cloud Quote record. Designed to make the Quote the authoritative source of deal data for sellers, deal desk, and sales leadership during the quoting process.
+A Salesforce Lightning Web Component that surfaces real deal economics - TCV, ACV, MRR, Customer Lifecycle Type, and per-period forecasts - directly on the Revenue Cloud Quote record. Designed to make the Quote the authoritative source of deal data for sellers, deal desk, and sales leadership during the quoting process.
 
-**Why this matters for subscription businesses:** Subscription deals don't behave like one-time transactions. They renew, they ramp, they amend mid-term, they bundle recurring and one-time products, and they carry pricing logic — term length, attribute-based rules, volume tiers, discount structures — that native Opportunity Products simply cannot represent. A business running on native Opportunities without a CPQ or Quote engine is flying blind on its own pipeline. The Revenue Cloud Quote is where actual deal economics are computed. This component makes those economics visible.
+**Why this matters for subscription businesses:** Subscription deals don't behave like one-time transactions. They renew, they ramp, they amend mid-term, they bundle recurring and one-time products, and they carry pricing logic - term length, attribute-based rules, volume tiers, discount structures - that native Opportunity Products simply cannot represent. A business running on native Opportunities without a CPQ or Quote engine is flying blind on its own pipeline. The Revenue Cloud Quote is where actual deal economics are computed. This component makes those economics visible.
 
 ---
 
@@ -12,20 +12,20 @@ Opportunity Amount is a wide lens. It works for simple, single-period deals at l
 
 ### The $180K Problem
 
-Take a product with a Monthly ProductSellingModel at $1,500/unit. A rep adds 10 units to an Opportunity as a standard Product — Opportunity Amount shows **$15,000**. That looks reasonable until you account for the contract term.
+Take a product with a Monthly ProductSellingModel at $1,500/unit. A rep adds 10 units to an Opportunity as a standard Product - Opportunity Amount shows **$15,000**. That looks reasonable until you account for the contract term.
 
-At 10 units × $1,500/month × 12 months, the true TCV is **$180,000** — 12× what appears in the pipeline report.
+At 10 units × $1,500/month × 12 months, the true TCV is **$180,000** - 12× what appears in the pipeline report.
 
 ![Standard Opportunity showing $15,000 vs. Revenue Cloud Quote showing $180,000](screenshots/0__4RevenueCloud_is_the_Opportunity_Forecast_Source.jpg)
 
 Native Opportunity Products have no concept of term length. The same problem compounds across every layer of deal complexity:
 
-- **Attribute-based pricing** — the same product's Annual PSM has a list price of $15,000 but reprices to $10,000 through the Revenue Cloud pricing engine. A manually entered Opportunity Product captures neither the term nor the waterfall.
-- **Ramp deals** — Year 1 at 10 units, Year 2 at 20, Year 3 at 30, potentially at different discount structures. Opportunity Amount has no model for this.
-- **Bundles** — a bundle parent often carries $0; pricing lives on the components. Opportunity Products can't represent bundle economics.
-- **Mid-term amendments** — an amendment quote is a delta transaction representing the incremental change, not the full renewed value. Opportunity Amount won't tell you the net new impact.
+- **Attribute-based pricing** - the same product's Annual PSM has a list price of $15,000 but reprices to $10,000 through the Revenue Cloud pricing engine. A manually entered Opportunity Product captures neither the term nor the waterfall.
+- **Ramp deals** - Year 1 at 10 units, Year 2 at 20, Year 3 at 30, potentially at different discount structures. Opportunity Amount has no model for this.
+- **Bundles** - a bundle parent often carries $0; pricing lives on the components. Opportunity Products can't represent bundle economics.
+- **Mid-term amendments** - an amendment quote is a delta transaction representing the incremental change, not the full renewed value. Opportunity Amount won't tell you the net new impact.
 
-**The Revenue Cloud Quote — and its underlying Quote Line Items, Quote Line Groups, and ProductSellingModels — is the only place in the system where deal economics are computed correctly.** This component surfaces that data where sellers and managers need it: on the Quote record, during the deal.
+**The Revenue Cloud Quote - and its underlying Quote Line Items, Quote Line Groups, and ProductSellingModels - is the only place in the system where deal economics are computed correctly.** This component surfaces that data where sellers and managers need it: on the Quote record, during the deal.
 
 ---
 
@@ -37,26 +37,26 @@ The **Deal Metrics** tab on a Quote record shows three sections.
 
 | Field | Description |
 |---|---|
-| Deal Type | Classification driven by QuoteAction type and ramp structure — New Business, Amendment, Renewal, Cancellation, or Ramped Deal variants |
+| Deal Type | Classification driven by QuoteAction type and ramp structure - New Business, Amendment, Renewal, Cancellation, or Ramped Deal variants |
 | Customer Lifecycle Type | Net-new MRR direction: New Business, Expansion, Flat Renewal, or Contraction |
 | Deal Start Date | Start date of the first Quote Line Group or Quote Line Item |
 | Deal End Date | End date of the last Quote Line Group or Quote Line Item |
 | Effective Deal Term | Calendar months from Deal Start to Deal End |
-| Term of Related Contract | Term from the linked Contract record, shown in **orange** when it does not match the Effective Deal Term — a data quality flag |
+| Term of Related Contract | Term from the linked Contract record, shown in **orange** when it does not match the Effective Deal Term - a data quality flag |
 
 ### Deal Financials
 
 | Field | Description |
 |---|---|
-| TCV (This Deal) | Total Contract Value — all QLG SummarySubtotals (ramp) or all QLI TotalPrices (flat), including one-time fees |
+| TCV (This Deal) | Total Contract Value - all QLG SummarySubtotals (ramp) or all QLI TotalPrices (flat), including one-time fees |
 | Blended ACV | Annualized TCV: `TCV ÷ (Effective Term Months ÷ 12)`. See note below. |
 | Projected Year 1 MRR | Subscription-only MRR for the first period ÷ 12. One-time fees excluded. |
-| Net New MRR | Incremental MRR contribution of this deal. Logic varies by deal type — see [Net New MRR Logic](#net-new-mrr-logic). |
+| Net New MRR | Incremental MRR contribution of this deal. Logic varies by deal type - see [Net New MRR Logic](#net-new-mrr-logic). |
 | One-Time / Non-Recurring Fees | Sum of all QLIs with a one-time ProductSellingModel (no EndDate). Kept separate from all recurring metrics. |
 | Account Booked TCV (For Reference) | Forward-looking contracted revenue across all active Assets for this account: `sum(AssetStatePeriod.Mrr × months)` for all future periods. Read live; not stored on Quote. |
 | Account Current MRR (For Reference) | Sum of `Asset.CurrentMrr` for all active Assets on this account. Read live; not stored on Quote. |
 
-> **For SEs: these two numbers together are the story.** Blended ACV is what the pipeline manager, sales leader, and comp plan need — an annualized deal value for quota tracking and forecasting rolls. Projected Year 1 MRR is what actually hits the books in period one. On a 3-year ramp, those numbers diverge significantly: a deal with Year 1 = $100K, Year 2 = $200K, Year 3 = $300K has a Blended ACV of $208K but a Year 1 MRR of $8,333/month. Without Revenue Cloud, you cannot produce either number correctly from native Salesforce — there is no term, no ramp structure, and no PSM-aware pricing in a standard Opportunity Product. That gap is the conversation.
+> **For SEs: these two numbers together are the story.** Blended ACV is what the pipeline manager, sales leader, and comp plan need - an annualized deal value for quota tracking and forecasting rolls. Projected Year 1 MRR is what actually hits the books in period one. On a 3-year ramp, those numbers diverge significantly: a deal with Year 1 = $100K, Year 2 = $200K, Year 3 = $300K has a Blended ACV of $208K but a Year 1 MRR of $8,333/month. Without Revenue Cloud, you cannot produce either number correctly from native Salesforce - there is no term, no ramp structure, and no PSM-aware pricing in a standard Opportunity Product. That gap is the conversation.
 
 ### Per Year Forecast *(ramp deals only)*
 
@@ -79,7 +79,7 @@ Net New MRR is not the same calculation for every deal type.
 | Deal Type | Net New MRR | Why |
 |---|---|---|
 | New Business | Year 1 MRR | No prior base to subtract |
-| Amendment | Year 1 MRR of this quote | Amendment lines represent only the delta — the incremental change, not the full new state |
+| Amendment | Year 1 MRR of this quote | Amendment lines represent only the delta - the incremental change, not the full new state |
 | Renewal | Year 1 MRR − Account Current MRR | Only on renewals does Year 1 MRR represent the full renewed total; the delta against baseline is meaningful |
 | Cancellation | − Account Current MRR | Full base is being removed |
 
@@ -98,9 +98,9 @@ A simple 12-month term deal. TCV = Blended ACV. Account Current MRR = $0 (no pri
 
 ---
 
-### Amendment — Mid-Term Expansion
+### Amendment - Mid-Term Expansion
 
-An amendment quote is a **delta transaction** — lines represent the incremental change, not the full new state. Here, additional units are added mid-contract. The prorated Asset carries the new total quantity forward from the amendment date.
+An amendment quote is a **delta transaction** - lines represent the incremental change, not the full new state. Here, additional units are added mid-contract. The prorated Asset carries the new total quantity forward from the amendment date.
 
 Customer Lifecycle Type = **Expansion** because Net New MRR (the amendment's incremental contribution) is positive. Account Current MRR shows the full existing install base.
 
@@ -113,14 +113,14 @@ Customer Lifecycle Type = **Expansion** because Net New MRR (the amendment's inc
 
 A 3-year ramp schedule with increasing quantities per year, plus a Professional Services one-time fee in Year 1.
 
-- **Projected Year 1 MRR** reflects subscription-only revenue — the PS fee is excluded
+- **Projected Year 1 MRR** reflects subscription-only revenue - the PS fee is excluded
 - **One-Time / Non-Recurring Fees** isolates the PS amount separately
-- **Term of Related Contract** appears in orange — the linked Contract is 12 months but the deal runs 36 months, surfacing a potential data quality issue automatically
+- **Term of Related Contract** appears in orange - the linked Contract is 12 months but the deal runs 36 months, surfacing a potential data quality issue automatically
 - **Per Year Forecast** shows the ramp step-ups: Year 1 ACV ≠ Year 2 ACV ≠ Year 3 ACV
 
 ![Ramp quote lines](screenshots/5_RampQuote_w_OneTime.jpg)
-![Ramp Deal Metrics — card view with Contract Term mismatch warning](screenshots/6_RampQuote_w_OneTime_Metrics.jpg)
-![Ramp Deal Metrics — expanded modal with Per Year Forecast](screenshots/7_RampQuote_w_OneTime_Metrics_ContractTermMismatch.jpg)
+![Ramp Deal Metrics - card view with Contract Term mismatch warning](screenshots/6_RampQuote_w_OneTime_Metrics.jpg)
+![Ramp Deal Metrics - expanded modal with Per Year Forecast](screenshots/7_RampQuote_w_OneTime_Metrics_ContractTermMismatch.jpg)
 
 ---
 
@@ -140,7 +140,7 @@ Deal Type = **Ramped Deal**. Customer Lifecycle Type = **Expansion**. Account Cu
 
 A cancellation quote carries negative quantities. All Deal Financials metrics are negative. Customer Lifecycle Type = **Contraction**.
 
-Note: Blended ACV on a partial-period cancellation annualizes the TCV, so its absolute value will appear larger than TCV. This is expected — it represents the annualized rate of the removed revenue, not the total TCV impact.
+Note: Blended ACV on a partial-period cancellation annualizes the TCV, so its absolute value will appear larger than TCV. This is expected - it represents the annualized rate of the removed revenue, not the total TCV impact.
 
 ![Cancellation quote lines](screenshots/11_Cancellation_Quote.jpg)
 ![Cancellation Deal Metrics](screenshots/12_Cancellation_Quote_Metrics.jpg)
@@ -160,7 +160,7 @@ One-Time / Non-Recurring Fees correctly isolates the PS and Training components.
 
 ### Renewal with Uplift
 
-A renewal quote at increased quantities. Deal Type = **Renewal**. Customer Lifecycle Type = **Expansion** because Net New MRR (Year 1 MRR − Account Current MRR) is positive — the renewal grew above the prior run-rate. Account Booked TCV reflects all contracted future revenue across active assets.
+A renewal quote at increased quantities. Deal Type = **Renewal**. Customer Lifecycle Type = **Expansion** because Net New MRR (Year 1 MRR − Account Current MRR) is positive - the renewal grew above the prior run-rate. Account Booked TCV reflects all contracted future revenue across active assets.
 
 ![Account Assets before renewal](screenshots/15_RenewAsset_with_Uplift.jpg)
 ![Renewal with Uplift Deal Metrics](screenshots/16_RenewAsset_with_Uplift_Metrics.jpg)
@@ -174,13 +174,13 @@ These two analytics surfaces are complementary.
 | | RMI Dashboards | Quote Deal Metrics |
 |---|---|---|
 | **Scope** | Aggregate, trend-based, book of business | Deal-specific, single quote |
-| **Timing** | Post-activation — Orders and Assets | Pre-close — Quote Line Items |
+| **Timing** | Post-activation - Orders and Assets | Pre-close - Quote Line Items |
 | **Audience** | Finance, RevOps, CS leadership | Seller, deal desk, account exec |
 | **Key questions** | Renewal rates, churn risk, ARR trends | This deal's TCV, Net New MRR, ramp structure |
 
 RMI tells you the forest. Deal Metrics tells you about the tree.
 
-The gap RMI doesn't fill is the **in-deal conversation** — when a seller is on a call structuring a 3-year ramp, they need to see deal economics on the Quote record right now, not after it activates into assets.
+The gap RMI doesn't fill is the **in-deal conversation** - when a seller is on a call structuring a 3-year ramp, they need to see deal economics on the Quote record right now, not after it activates into assets.
 
 ---
 
@@ -237,7 +237,7 @@ sf project deploy start \
 
 ## Design Notes
 
-**Billing forecast is intentionally excluded.** BillingSchedules and BillingScheduleGroups provide the authoritative billing operations forecast downstream from the Order. Adding billing frequency or estimated invoice amounts to this component would introduce noise — especially for usage-based products (where committed ≠ invoiced) and quotes with mixed billing frequencies. This component is scoped to sales and sales leader deal economics only.
+**Billing forecast is intentionally excluded.** BillingSchedules and BillingScheduleGroups provide the authoritative billing operations forecast downstream from the Order. Adding billing frequency or estimated invoice amounts to this component would introduce noise - especially for usage-based products (where committed ≠ invoiced) and quotes with mixed billing frequencies. This component is scoped to sales and sales leader deal economics only.
 
 **Metrics are a snapshot.** Calculated values are stored on the Quote at the time of the last Recalculate. They do not auto-update when lines change. The Recalculate button re-triggers the flow on demand.
 
