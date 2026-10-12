@@ -6,7 +6,9 @@ Best practice is for Revenue Cloud to be the authoritative source of deal data f
 
 ![Deal Metrics component showing TCV, Blended ACV, Year 1 MRR, and per-period ramp forecast](screenshots/6_RampQuote_w_OneTime_Metrics.jpg)
 
-**Why this matters for subscription businesses:** Subscription deals don't behave like one-time transactions. They renew, they ramp, they amend mid-term, they bundle recurring and one-time products, and they carry pricing logic - term length, attribute-based rules, volume tiers, discount structures - that native Opportunity Products simply cannot represent. A business running on native Opportunities without a CPQ or Quote engine is flying blind on its own pipeline. The Revenue Cloud Quote is where actual deal economics are computed. This component makes those economics visible.
+**Why this matters for subscription businesses:** Native Opportunity Products can't show reality. Subscription deals ramp, renew, and get amended mid-term. They mix and bundle recurring and one-time products and rely on pricing logic like term length, volume tiers, and discount structures.
+
+Revenue Cloud is where true deal economics are computed. This LWC makes those deal KPIs visible.
 
 ---
 
